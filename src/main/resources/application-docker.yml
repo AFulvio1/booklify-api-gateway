@@ -1,17 +1,8 @@
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-
-server:
-  port: 9191
-
 spring:
   application:
-    name: api-gateway
-  profiles:
-    active: docker
+    name: API-GATEWAY
+  main:
+    web-application-type: reactive
   cloud:
     gateway:
       globalcors:
@@ -23,34 +14,28 @@ spring:
             maxAge: 3600
             allowCredentials: true
       routes:
-        -   id: book-service
+        - id: BOOK-SERVICE
             predicates:
               - Path=/api/categories/**
             uri: http://book-service:8080
-        -   id: book-service
+        - id: BOOK-SERVICE
             predicates:
               - Path=/api/books/**
             uri: http://book-service:8080
-        -   id: user-service
+        - id: USER-SERVICE
             predicates:
               - Path=/api/users/**
             uri: http://book-service:8081
-  sleuth:
-    sampler:
-      probability: 1
-  zipkin:
-    base-url: http://127.0.0.1:9411/
 
-eureka:
-  instance:
-    hostname: api-gateway
-    preferIpAddress: true
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://service-registry:8761/eureka/
+server:
+  port: 9191
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
 logging:
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n [%springProfile]"
+  level:
+    web: debug
