@@ -1,0 +1,56 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+server:
+  port: 9191
+
+spring:
+  application:
+    name: api-gateway
+  profiles:
+    active: docker
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowed-methods: GET,PUT,POST,DELETE
+            allowedHeaders: "Authorization,Cache-Control,Content-Type"
+            maxAge: 3600
+            allowCredentials: true
+      routes:
+        -   id: book-service
+            predicates:
+              - Path=/api/categories/**
+            uri: http://book-service:8080
+        -   id: book-service
+            predicates:
+              - Path=/api/books/**
+            uri: http://book-service:8080
+        -   id: user-service
+            predicates:
+              - Path=/api/users/**
+            uri: http://book-service:8081
+  sleuth:
+    sampler:
+      probability: 1
+  zipkin:
+    base-url: http://127.0.0.1:9411/
+
+eureka:
+  instance:
+    hostname: api-gateway
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://service-registry:8761/eureka/
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n [%springProfile]"
